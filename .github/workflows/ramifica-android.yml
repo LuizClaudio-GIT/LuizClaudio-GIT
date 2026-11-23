@@ -45,7 +45,7 @@ jobs:
             echo "$KEYSTORE_B64" | base64 -d > app-android/android/app/ramifica.keystore
             echo "Usando a chave guardada nos segredos do repositório."
           else
-            echo "::warning::Segredo RAMIFICA_KEYSTORE_B64 não configurado: usando uma chave temporária. Para atualizar o app depois, será preciso desinstalar a versão anterior."
+            echo "Sem chave fixa: usando uma chave nova neste build."
             keytool -genkeypair -keystore app-android/android/app/ramifica.keystore -alias ramifica -keyalg RSA -keysize 2048 -validity 10000 -storepass ramifica -keypass ramifica -dname "CN=Ramifica, O=Ramifica, C=BR"
           fi
 
@@ -80,4 +80,8 @@ jobs:
             2. Abra o arquivo baixado. Se o Android pedir, permita **instalar apps desta fonte** (Chrome ou Arquivos).
             3. Toque em **Instalar**.
 
-            Para atualizar, baixe a versão mais nova e instale por cima: seus mapas continuam lá.
+            ## Como atualizar (cada versão tem uma assinatura nova)
+            1. No Ramifica, toque em ⋯ › **Fazer backup de todos os mapas** e guarde o arquivo (Drive ou Arquivos).
+            2. Desinstale o Ramifica.
+            3. Instale o **Ramifica.apk** novo.
+            4. Abra o app, toque em **Importar** e escolha o arquivo de backup.
