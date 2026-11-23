@@ -1,22 +1,27 @@
 # Ramifica
 
-App de mapas mentais para o celular, feito para aproveitar o Galaxy Z Fold: no Fold fechado mostra o mapa em tela cheia com uma barra de ações embaixo; aberto, mostra um painel lateral com detalhes da ideia, a estrutura em lista e as opções do mapa.
+App de mapas mentais para o celular, feito para aproveitar o Galaxy Z Fold: no Fold fechado o mapa ocupa a tela toda e as ações ficam numa barra embaixo; aberto, aparece um painel lateral com detalhes da ideia, a estrutura em lista e as opções do mapa.
 
-Funciona sem internet e pode ser instalado na tela inicial (PWA). Os mapas ficam salvos no próprio aparelho; use **⋯ › Fazer backup** na tela inicial de vez em quando.
+É um PWA: instala na tela inicial, funciona sem internet e guarda tudo no próprio aparelho (IndexedDB, com pedido de armazenamento protegido).
 
 ## Instalar no celular
 
 1. No GitHub, abra **Settings › Pages** deste repositório, escolha a branch e a pasta raiz (`/`) e salve.
-2. No celular, abra `https://<seu-usuario>.github.io/<repositorio>/ramifica/` no Chrome ou no Samsung Internet.
-3. No menu do navegador, toque em **Adicionar à tela inicial** ou **Instalar app**.
+2. No celular, abra `https://<seu-usuario>.github.io/<repositorio>/ramifica/` no Chrome.
+3. Toque em **Instalar app** (aparece na tela inicial do Ramifica) ou, no menu ⋮ do Chrome, em **Instalar app**.
+
+Depois de instalado:
+- **Compartilhar › Ramifica** em qualquer app (Chrome, WhatsApp, Keep…) guarda o texto ou link num mapa, no ramo 📥 Entrada.
+- Segurando o ícone do app aparecem atalhos: **Captura rápida**, **Novo mapa** e **Último mapa**.
 
 ## Recursos
 
-- Subideias, ideias ao lado, edição direto no mapa, arrastar para reordenar ou mudar de ramo
-- Pinça para zoom, arrastar para mover, botão para ver o mapa inteiro
-- Cores por ramo, ícones, formatos, tarefas com caixinha, notas e conexões entre ramos
-- Despejo rápido: escreva uma ideia por linha (com recuo para subideias) e vire mapa
-- Modo foco num ramo, recolher e expandir, busca em ideias e notas
-- Organização automática em dois lados, para a direita ou para baixo
-- Desfazer e refazer, tema claro e escuro, atalhos de teclado (Tab, Enter, F2, Delete, setas)
-- Exportar como imagem PNG, lista de tópicos (Markdown) ou arquivo; importar backup, .md ou .txt
+- **Ideias:** subideias, ideias ao lado, ideias soltas (toque duplo no fundo), edição direto no mapa, arrastar para reordenar ou mudar de ramo, soltar do ramo
+- **Conteúdo:** imagens e fotos, anexos, links, datas com aviso de "hoje" e atrasadas, tarefas, notas, ícones, conexões entre ramos e grupos com moldura e nome
+- **Canvas:** pinça para zoom, seleção múltipla (toque ou área), copiar/colar/duplicar ramos, minimapa, foco num ramo, busca, modo apresentação
+- **Estilos:** 6 paletas de cores, linhas curvas, em degrau ou retas, letra padrão, manuscrita ou serifada, desenho em dois lados, para a direita ou para baixo
+- **Segurança dos dados:** histórico de versões (até 30 por mapa), backup completo com imagens e anexos, aviso de backup
+- **Exportar:** PNG, PDF (mapa e lista), lista de tópicos, OPML e arquivo do Ramifica
+- **Importar:** backup do Ramifica, XMind, FreeMind (.mm), OPML, Markdown e texto
+- **Desempenho:** mapas com mais de mil ideias desenham só o que está na tela
+- Tutorial interativo na primeira abertura, tema claro e escuro, atalhos de teclado (Tab, Enter, F2, Delete, setas, Ctrl+C/V/D/Z/Y/F/A)
