@@ -1,0 +1,83 @@
+name: Ramifica - app Android
+
+on:
+  push:
+    branches: ['ccr-3adc9da4-gt3bge', 'main', 'master']
+    paths: ['ramifica/**', 'app-android/**', '.github/workflows/ramifica-android.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ramifica-android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app-android/package-lock.json
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+
+      - name: Preparar o app (copiar o Ramifica web para dentro do Android)
+        working-directory: app-android
+        run: |
+          npm ci
+          npm run sync
+
+      - name: Preparar a chave de assinatura
+        env:
+          KEYSTORE_B64: ${{ secrets.RAMIFICA_KEYSTORE_B64 }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > app-android/android/app/ramifica.keystore
+            echo "Usando a chave guardada nos segredos do repositório."
+          else
+            echo "::warning::Segredo RAMIFICA_KEYSTORE_B64 não configurado: usando uma chave temporária. Para atualizar o app depois, será preciso desinstalar a versão anterior."
+            keytool -genkeypair -keystore app-android/android/app/ramifica.keystore -alias ramifica -keyalg RSA -keysize 2048 -validity 10000 -storepass ramifica -keypass ramifica -dname "CN=Ramifica, O=Ramifica, C=BR"
+          fi
+
+      - name: Gerar o APK
+        working-directory: app-android/android
+        env:
+          RAMIFICA_KEYSTORE_PASSWORD: ${{ secrets.RAMIFICA_KEYSTORE_PASSWORD || 'ramifica' }}
+          RAMIFICA_KEY_PASSWORD: ${{ secrets.RAMIFICA_KEYSTORE_PASSWORD || 'ramifica' }}
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon --stacktrace
+
+      - name: Dar nome ao arquivo
+        run: cp app-android/android/app/build/outputs/apk/release/app-release.apk Ramifica.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Ramifica-apk
+          path: Ramifica.apk
+
+      - name: Publicar na página de Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ramifica-v1.0.${{ github.run_number }}
+          name: Ramifica 1.0.${{ github.run_number }}
+          target_commitish: ${{ github.sha }}
+          make_latest: true
+          files: Ramifica.apk
+          body: |
+            ## Como instalar no celular
+            1. No celular, toque em **Ramifica.apk** logo abaixo para baixar.
+            2. Abra o arquivo baixado. Se o Android pedir, permita **instalar apps desta fonte** (Chrome ou Arquivos).
+            3. Toque em **Instalar**.
+
+            Para atualizar, baixe a versão mais nova e instale por cima: seus mapas continuam lá.

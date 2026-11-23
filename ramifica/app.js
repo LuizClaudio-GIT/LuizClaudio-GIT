@@ -13,6 +13,9 @@ const PALETTES = {
 };
 const EMOJIS = ['💡', '⭐', '❓', '✅', '⚠️', '🎯', '📌', '🔥', '🧠', '❤️', '💰', '📅', '🚀', '📚', '🛠️', '✨'];
 const KEY = 'nebulosa.v1', PKEY = 'nebulosa.prefs', CLIPKEY = 'ramifica.clip';
+const Cap = window.Capacitor;
+const isNative = !!(Cap && Cap.isNativePlatform && Cap.isNativePlatform());
+const plug = n => (isNative && Cap.Plugins && Cap.Plugins[n]) || null;
 const inFrame = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const uid = () => Math.random().toString(36).slice(2, 8) + Date.now().toString(36).slice(-4);
@@ -28,7 +31,7 @@ const fmtSize = b => b < 1024 ? b + ' B' : b < 1048576 ? (b / 1024).toFixed(0) +
 const fmtDate = t => new Date(t).toLocaleString('pt-BR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 function prettyUrl(u) { try { const x = new URL(u); return x.hostname.replace(/^www\./, '') + (x.pathname.length > 1 ? x.pathname.replace(/\/$/, '').slice(0, 32) : ''); } catch (e) { return u; } }
 function vibrate() { try { navigator.vibrate && navigator.vibrate(8); } catch (e) {} }
-function openUrl(u) { const a = document.createElement('a'); a.href = u; a.target = '_blank'; a.rel = 'noopener'; document.body.append(a); a.click(); a.remove(); }
+function openUrl(u) { if (plug('Browser')) { plug('Browser').open({ url: u }).catch(() => {}); return; } const a = document.createElement('a'); a.href = u; a.target = '_blank'; a.rel = 'noopener'; document.body.append(a); a.click(); a.remove(); }
 
 /* ================= armazenamento: IndexedDB, com reserva no localStorage ================= */
 let db = { maps: {} };
@@ -1530,7 +1533,7 @@ async function addFiles(id, files) {
 async function openAttachment(f, share) {
   const b = await Store.getBlob(f.id);
   if (!b) { toast('Esse anexo não está mais neste aparelho.'); return; }
-  if (share) { deliver(new Blob([b], { type: f.type }), f.name); return; }
+  if (share || isNative) { deliver(new Blob([b], { type: f.type }), f.name); return; }
   if (/^(image|text|audio|video)\//.test(f.type) || f.type === 'application/pdf') { const u = await blobUrl(f.id); openUrl(u); }
   else deliver(new Blob([b], { type: f.type }), f.name);
 }
@@ -1635,6 +1638,14 @@ function openCapture(text, single) {
 
 /* ================= exportar ================= */
 async function deliver(blob, name) {
+  if (isNative) {
+    try {
+      const data = (await blobToDataURL(blob)).split(',')[1];
+      const r = await plug('Filesystem').writeFile({ path: name, data, directory: 'CACHE' });
+      await plug('Share').share({ title: name, files: [r.uri], dialogTitle: 'Salvar ou enviar' });
+    } catch (e) { if (!/cancel/i.test(String(e && e.message))) toast('Não consegui compartilhar o arquivo.'); }
+    return;
+  }
   const file = new File([blob], name, { type: blob.type });
   try {
     if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: name }); return; }
@@ -1662,6 +1673,7 @@ function copyModal(title, text) {
 const fileSafe = s => (s || 'mapa').replace(/[\\/:*?"<>|\n]+/g, ' ').trim().slice(0, 50) || 'mapa';
 async function exportOutline() {
   const text = toOutline(M);
+  if (isNative) { try { await plug('Share').share({ title: N(M.root).text, text, dialogTitle: 'Enviar lista' }); } catch (e) {} return; }
   try { if (navigator.share && !inFrame) { await navigator.share({ title: N(M.root).text, text }); return; } } catch (e) { if (e.name === 'AbortError') return; }
   copyModal('Lista de tópicos', text);
 }
@@ -2071,7 +2083,7 @@ function renderHome() {
       <button class="icon-btn" data-menu aria-label="Opções de ${esc(title)}">${icon('more')}</button></div></article>`;
   }).join('') : `<div class="empty" style="grid-column:1/-1"><b>Nenhum mapa ainda</b><span>Crie um mapa novo ou comece por um modelo abaixo.</span></div>`;
   const ib = $('#install-banner');
-  const showInstall = !isStandalone() && !inFrame && (installEvt || /Android/i.test(navigator.userAgent));
+  const showInstall = !isNative && !isStandalone() && !inFrame && (installEvt || /Android/i.test(navigator.userAgent));
   ib.hidden = !showInstall;
   if (showInstall) {
     ib.innerHTML = `<p><b>Instale o Ramifica no celular.</b> Ele abre como app, funciona sem internet e o Android protege seus mapas contra limpeza automática.</p>` +
@@ -2103,9 +2115,10 @@ async function storageInfo() {
 async function showStorage() {
   const s = await storageInfo();
   let persisted = s.persisted;
-  if (!persisted) { try { persisted = await navigator.storage.persist(); } catch (e) {} }
+  if (!persisted && !isNative) { try { persisted = await navigator.storage.persist(); } catch (e) {} }
+  if (isNative) persisted = true;
   modal({ title: persisted ? 'Seus mapas estão protegidos' : 'Armazenamento comum', html: `
-    <p>${persisted ? 'O Android marcou o Ramifica como armazenamento persistente: os mapas não são apagados para liberar espaço.' : 'O navegador pode apagar os dados deste site se faltar espaço. Instale o Ramifica como app para pedir proteção, e faça backups de vez em quando.'}</p>
+    <p>${isNative ? 'Os mapas ficam guardados dentro do app Ramifica, no seu celular. Eles só são apagados se você desinstalar o app ou limpar os dados dele nas configurações do Android.' : persisted ? 'O Android marcou o Ramifica como armazenamento persistente: os mapas não são apagados para liberar espaço.' : 'O navegador pode apagar os dados deste site se faltar espaço. Instale o Ramifica como app para pedir proteção, e faça backups de vez em quando.'}</p>
     <p>${idb ? 'Os mapas, imagens e anexos ficam num banco de dados do próprio aparelho.' : 'Este navegador não liberou o banco de dados completo; imagens e anexos ficam indisponíveis.'} Espaço usado: <b>${fmtSize(s.used)}</b>.</p>
     <p>Mapas: <b>${Object.keys(db.maps).length}</b>. Último backup: <b>${prefs.lastBackup ? ago(prefs.lastBackup) : 'nunca'}</b>.</p>`,
     actions: [{ label: 'Fechar' }, { label: 'Fazer backup agora', kind: 'primary', run: () => { exportBackup(); } }] });
@@ -2187,12 +2200,32 @@ $('#map-title').onclick = () => { reveal(M.root); centerOn(M.root); startEdit(M.
 $('#btn-undo').onclick = undo;
 $('#btn-redo').onclick = redo;
 
+/* ================= app Android ================= */
+if (isNative) {
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a[href^="http"]');
+    if (a) { e.preventDefault(); openUrl(a.href); }
+  }, true);
+  const appP = plug('App');
+  if (appP) appP.addListener('backButton', () => {
+    if (!$('#modal').hidden) { closeModal(); return; }
+    if (panelEl.classList.contains('open')) { closePanel(); return; }
+    if (present) { stopPresent(); return; }
+    if (!$('#searchbar').hidden) { closeSearch(); return; }
+    if (selMode || multi.size) { setSelMode(false); return; }
+    if (edit) { commitEdit(); return; }
+    if (editorOpen) { $('#btn-back').click(); return; }
+    appP.exitApp();
+  });
+  if (appP) appP.addListener('pause', flush);
+}
+
 /* ================= abertura do app ================= */
-function handleLaunch() {
-  const q = new URLSearchParams(location.search);
+function handleLaunch(qs) {
+  const q = new URLSearchParams(qs === undefined ? location.search : qs);
   if (![...q.keys()].length) return false;
   const acao = q.get('acao'), title = q.get('title'), text = q.get('text'), url = q.get('url');
-  try { history.replaceState(null, '', location.pathname); } catch (e) {}
+  if (qs === undefined) { try { history.replaceState(null, '', location.pathname); } catch (e) {} }
   if (title || text || url) {
     const parts = [title, text];
     if (url && !(text || '').includes(url)) parts.push(url);
@@ -2235,6 +2268,8 @@ try { document.fonts.addEventListener('loadingdone', () => { clearTimeout(fontT)
   }
   try { if (navigator.storage && navigator.storage.persist && isStandalone()) navigator.storage.persist(); } catch (e) {}
   setTimeout(gcBlobs, 4000);
-  if ('serviceWorker' in navigator && location.protocol === 'https:' && !inFrame) navigator.serviceWorker.register('sw.js').catch(() => {});
+  // O app Android entrega aqui o que chegou por Compartilhar ou pelos atalhos do ícone.
+  window.ramificaLaunch = qs => { if (coach) endCoach(); handleLaunch(qs); };
+  if (!isNative && 'serviceWorker' in navigator && location.protocol === 'https:' && !inFrame) navigator.serviceWorker.register('sw.js').catch(() => {});
 })();
 })();

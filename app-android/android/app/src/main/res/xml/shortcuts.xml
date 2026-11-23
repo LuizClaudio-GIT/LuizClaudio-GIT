@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut android:shortcutId="captura" android:enabled="true" android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/sc_captura_curto" android:shortcutLongLabel="@string/sc_captura">
+        <intent android:action="android.intent.action.VIEW" android:data="ramifica://despejo"
+            android:targetPackage="io.github.luizclaudiogit.ramifica" android:targetClass="io.github.luizclaudiogit.ramifica.MainActivity" />
+    </shortcut>
+    <shortcut android:shortcutId="novo" android:enabled="true" android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/sc_novo" android:shortcutLongLabel="@string/sc_novo">
+        <intent android:action="android.intent.action.VIEW" android:data="ramifica://novo"
+            android:targetPackage="io.github.luizclaudiogit.ramifica" android:targetClass="io.github.luizclaudiogit.ramifica.MainActivity" />
+    </shortcut>
+    <shortcut android:shortcutId="ultimo" android:enabled="true" android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/sc_ultimo" android:shortcutLongLabel="@string/sc_ultimo">
+        <intent android:action="android.intent.action.VIEW" android:data="ramifica://ultimo"
+            android:targetPackage="io.github.luizclaudiogit.ramifica" android:targetClass="io.github.luizclaudiogit.ramifica.MainActivity" />
+    </shortcut>
+</shortcuts>

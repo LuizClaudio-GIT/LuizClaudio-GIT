@@ -1,6 +1,6 @@
 // Ramifica: deixa o app funcionando sem internet.
-const CACHE = 'ramifica-v2';
-const ASSETS = ['./', './index.html', './app.js', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png'];
+const CACHE = 'ramifica-v3';
+const ASSETS = ['./', './index.html', './app.js', './fonts.css', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
   self.skipWaiting();

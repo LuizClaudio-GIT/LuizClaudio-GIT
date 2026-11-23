@@ -1,0 +1,6 @@
+node_modules/
+www/
+
+# Chave de assinatura: nunca no repositório
+*.keystore
+*.jks

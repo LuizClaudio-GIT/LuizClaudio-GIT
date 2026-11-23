@@ -1,0 +1,9 @@
+{
+  "appId": "io.github.luizclaudiogit.ramifica",
+  "appName": "Ramifica",
+  "webDir": "www",
+  "android": {
+    "backgroundColor": "#0E131D",
+    "adjustMarginsForEdgeToEdge": "auto"
+  }
+}

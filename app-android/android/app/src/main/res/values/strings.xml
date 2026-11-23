@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Ramifica</string>
+    <string name="title_activity_main">Ramifica</string>
+    <string name="package_name">io.github.luizclaudiogit.ramifica</string>
+    <string name="custom_url_scheme">io.github.luizclaudiogit.ramifica</string>
+    <string name="sc_captura">Captura rápida</string>
+    <string name="sc_captura_curto">Capturar</string>
+    <string name="sc_novo">Novo mapa</string>
+    <string name="sc_ultimo">Último mapa</string>
+</resources>
