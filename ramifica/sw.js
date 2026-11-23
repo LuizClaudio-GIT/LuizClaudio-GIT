@@ -1,5 +1,5 @@
-// Nebulosa: deixa o app funcionando sem internet.
-const CACHE = 'nebulosa-v1';
+// Ramifica: deixa o app funcionando sem internet.
+const CACHE = 'ramifica-v1';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));

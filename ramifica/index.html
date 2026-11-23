@@ -10,7 +10,7 @@
 <meta name="theme-color" content="#0E131D">
 <meta name="mobile-web-app-capable" content="yes">
 <!--/PWA-->
-<title>Nebulosa</title>
+<title>Ramifica</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -287,7 +287,7 @@ textarea:focus,input[type=text]:focus{border-color:var(--accent)}
     <div class="home-in">
       <div class="brand">
         <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="8" fill="var(--accent)"/><g stroke="var(--ink)" stroke-width="2.4" stroke-linecap="round" fill="none"><path d="M31 21c5-2 7-6 9-9M31 28c4 1 7 4 9 8M17 21c-5-2-7-6-9-9M17 28c-4 1-7 4-9 8"/></g><g fill="var(--ink)"><circle cx="41" cy="10" r="3.5"/><circle cx="41" cy="38" r="3.5"/><circle cx="7" cy="10" r="3.5"/><circle cx="7" cy="38" r="3.5"/></g></svg>
-        <h1>Nebulosa</h1>
+        <h1>Ramifica</h1>
         <span class="sp"></span>
         <button class="icon-btn" id="home-theme" aria-label="Mudar tema" title="Tema"><svg class="i"><use href="#i-moon"/></svg></button>
         <button class="icon-btn" id="home-more" aria-label="Backup e opções" title="Backup e opções"><svg class="i"><use href="#i-more"/></svg></button>
@@ -388,7 +388,7 @@ let db = { maps: {} };
 let prefs = { theme: 'system', panel: true, lastBackup: 0, seen: false };
 let storageOk = true;
 
-const WELCOME = `Nebulosa
+const WELCOME = `Ramifica
   💡 Comece aqui
     Toque numa ideia para selecionar
     Toque de novo para editar o texto
@@ -1375,12 +1375,12 @@ async function exportOutline() {
   copyModal('Lista de tópicos', text);
 }
 function exportMapFile(m) {
-  const blob = new Blob([JSON.stringify({ app: 'nebulosa', version: 1, exported: Date.now(), maps: [m] }, null, 1)], { type: 'application/json' });
-  deliver(blob, fileSafe(m.nodes[m.root].text) + '.nebulosa.json');
+  const blob = new Blob([JSON.stringify({ app: 'ramifica', version: 1, exported: Date.now(), maps: [m] }, null, 1)], { type: 'application/json' });
+  deliver(blob, fileSafe(m.nodes[m.root].text) + '.ramifica.json');
 }
 function exportBackup() {
-  const blob = new Blob([JSON.stringify({ app: 'nebulosa', version: 1, exported: Date.now(), maps: Object.values(db.maps) })], { type: 'application/json' });
-  const d = new Date(), name = `nebulosa-backup-${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}.json`;
+  const blob = new Blob([JSON.stringify({ app: 'ramifica', version: 1, exported: Date.now(), maps: Object.values(db.maps) })], { type: 'application/json' });
+  const d = new Date(), name = `ramifica-backup-${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}.json`;
   prefs.lastBackup = Date.now(); savePrefs(); renderHome();
   deliver(blob, name);
 }
@@ -1399,7 +1399,7 @@ function importText(text, fname) {
     toast(n ? `${n} mapa${n > 1 ? 's' : ''} importado${n > 1 ? 's' : ''}` : 'Nada novo para importar: seus mapas já estão atualizados');
     return;
   }
-  if (data) { toast('Este arquivo não é um backup do Nebulosa.'); return; }
+  if (data) { toast('Este arquivo não é um backup do Ramifica.'); return; }
   const items = parseOutline(text);
   if (!items.length) { toast('O arquivo está vazio.'); return; }
   const m = mapFromOutline(text); db.maps[m.id] = m; persist(); renderHome();
@@ -1575,7 +1575,7 @@ $('#home-import').onclick = () => $('#file-in').click();
 $('#home-theme').onclick = cycleTheme;
 $('#home-more').onclick = () => menuModal('Backup e opções', [
   { k: 'backup', icon: 'download', label: 'Fazer backup de todos os mapas', sub: prefs.lastBackup ? `Último: ${ago(prefs.lastBackup)}` : 'Gera um arquivo .json para guardar' },
-  { k: 'import', icon: 'upload', label: 'Importar backup ou lista', sub: 'Aceita .json do Nebulosa, .md ou .txt' },
+  { k: 'import', icon: 'upload', label: 'Importar backup ou lista', sub: 'Aceita .json do Ramifica, .md ou .txt' },
   '-',
   { k: 'theme', icon: 'moon', label: 'Mudar tema', sub: themeLabel() },
 ], k => { if (k === 'backup') exportBackup(); else if (k === 'import') $('#file-in').click(); else cycleTheme(); });

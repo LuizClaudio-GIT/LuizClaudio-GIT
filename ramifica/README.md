@@ -1,4 +1,4 @@
-# Nebulosa
+# Ramifica
 
 App de mapas mentais para o celular, feito para aproveitar o Galaxy Z Fold: no Fold fechado mostra o mapa em tela cheia com uma barra de ações embaixo; aberto, mostra um painel lateral com detalhes da ideia, a estrutura em lista e as opções do mapa.
 
@@ -7,7 +7,7 @@ Funciona sem internet e pode ser instalado na tela inicial (PWA). Os mapas ficam
 ## Instalar no celular
 
 1. No GitHub, abra **Settings › Pages** deste repositório, escolha a branch e a pasta raiz (`/`) e salve.
-2. No celular, abra `https://<seu-usuario>.github.io/<repositorio>/nebulosa/` no Chrome ou no Samsung Internet.
+2. No celular, abra `https://<seu-usuario>.github.io/<repositorio>/ramifica/` no Chrome ou no Samsung Internet.
 3. No menu do navegador, toque em **Adicionar à tela inicial** ou **Instalar app**.
 
 ## Recursos
